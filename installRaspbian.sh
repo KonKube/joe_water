@@ -138,8 +138,17 @@ then
 
   if [[ -f $ROOT_FS_PATH/etc/locale.gen ]]
   then
-    echo "copy locales from host to rootfs"
-    sudo cp -a /etc/locale.gen $ROOT_FS_PATH/etc/locale.gen
+    echo "set locales to en_US.utf8"
+    sudo sed -i 's/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' $ROOT_FS_PATH/etc/locale.gen
+  fi
+
+  if [[ -f ./installApplication.sh ]]
+  then
+    cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
+    sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
+    echo "@reboot ~/installApplication.sh"  | sudo tee -a /var/spool/cron/crontabs/pi
+    sudo chown 1000:crontab /var/spool/cron/crontabs/pi
+    sudo chmod 600 /var/spool/cron/crontabs/pi
   fi
 else
   echo "could not find $ROOT_FS_PATH"
