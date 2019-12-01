@@ -139,7 +139,7 @@ then
   if [[ -f $ROOT_FS_PATH/etc/locale.gen ]]
   then
     echo "copy locales from host to rootfs"
-    cp -a /etc/locale.gen $ROOT_FS_PATH/etc/locale.gen
+    sudo cp -a /etc/locale.gen $ROOT_FS_PATH/etc/locale.gen
   fi
 else
   echo "could not find $ROOT_FS_PATH"
@@ -156,8 +156,10 @@ else
   echo "could not find $BOOT_FS_PATH"
 fi
 
+echo "removes mounts"
 sudo umount $ROOT_FS_PATH
 sudo umount $BOOT_FS_PATH
-
+echo "removes mountpoints"
 sudo rm -rf $ROOT_FS_PATH
 sudo rm -rf $BOOT_FS_PATH
+echo "finished!"
