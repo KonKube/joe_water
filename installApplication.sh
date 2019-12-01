@@ -28,6 +28,9 @@ then
   make
   sudo make install
 
+  # enabled GreenIQ in
+  sed -i 's/^\/\/#define GREENIQ/#define GREENIQ/g' /home/pi/sprinklers_pi/config.h
+
   # create initial.lock
   touch ~/initial.lock
   sudo reboot now
