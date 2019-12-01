@@ -146,9 +146,9 @@ then
   then
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
-    echo "@reboot ~/installApplication.sh"  | sudo tee -a /var/spool/cron/crontabs/pi
-    sudo chown 1000:crontab /var/spool/cron/crontabs/pi
-    sudo chmod 600 /var/spool/cron/crontabs/pi
+    echo "@reboot ~/installApplication.sh"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    sudo chown 1000:crontab $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 else
   echo "could not find $ROOT_FS_PATH"

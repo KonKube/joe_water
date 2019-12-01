@@ -5,9 +5,6 @@ set -e
 if [[ ! -f ~/initial.lock ]]
 then
   # initialize locales
-  export LANGUAGE=en_US.UTF-8
-  export LANG=en_US.UTF-8
-  export LC_ALL=en_US.UTF-8
   sudo /usr/sbin/locale-gen en_US.UTF-8
 
   # initial update and upgrade on first boot
