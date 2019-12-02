@@ -1,5 +1,5 @@
 #!/bin/bash
-# ./installRaspbian.sh joewater /dev/sdb Europe/Berlin
+# ./installRaspbian.sh joewater /dev/sdb Europe/Berlin recipient@gmail
 
 set -e
 set -o pipefail
@@ -7,6 +7,7 @@ set -o pipefail
 HOSTNAME=$1
 FILESYSTEM=$2
 TIMEZONE=$3
+MAIL_RECIPIENT=$4
 
 IMAGE=raspbian.img
 ROOT_FS_PATH=/media/`whoami`/rootfs
@@ -48,7 +49,7 @@ then
     sudo umount $ROOT_FS_PATH
   fi
   echo "fix rootfs $ROOT_FS_PATH with fsck"
-  sudo fsck -y /dev/sdb2 || true
+  sudo fsck -y /dev/sdb2
   echo "successful fixed $ROOT_FS_PATH"
 fi
 
@@ -79,7 +80,7 @@ then
     sudo umount $BOOT_FS_PATH
   fi
   echo "fix boot $BOOT_FS_PATH with fsck"
-  sudo fsck -y /dev/sdb1 || true
+  sudo fsck -y /dev/sdb1
   echo "successful fixed $BOOT_FS_PATH"
 fi
 
@@ -146,7 +147,7 @@ then
     sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 
-  if [[ -f ./ssmtp.conf ]] && [[ -f ./mail.sh ]]
+  if [[ -f ./ssmtp.conf && -f ./mail.sh && -v MAIL_RECIPIENT ]]
   then
     echo "adding ssmtp.conf and mail.sh to $ROOT_FS_PATH/home/pi/"
     cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/ssmtp.conf
@@ -154,8 +155,8 @@ then
     cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/mail.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/mail.sh
     echo "adding mail notification for reboots and daily heartbeats"
-    echo "@reboot ~/mail.sh REBOOT `grep recipient ~/ssmtp.conf | cut -d = -f2`"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
-    echo "0 16 * * * ~/mail.sh HEARTBEAT `grep recipient ~/ssmtp.conf | cut -d = -f2`"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "0 16 * * * ~/mail.sh $MAIL_RECIPIENT HEARTBEAT"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 else
   echo "could not find $ROOT_FS_PATH"
