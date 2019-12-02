@@ -152,7 +152,7 @@ then
     echo "adding ssmtp.conf and mail.sh to $ROOT_FS_PATH/home/pi/"
     cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/ssmtp.conf
     sudo chmod 755 $ROOT_FS_PATH/home/pi/ssmtp.conf
-    cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/mail.sh
+    cp ./mail.sh $ROOT_FS_PATH/home/pi/mail.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/mail.sh
     echo "adding mail notification for reboots and daily heartbeats"
     echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
