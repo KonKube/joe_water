@@ -17,6 +17,17 @@ then
     libsqlite3-dev \
     build-essential
 
+  if [[ -f ~/ssmtp.conf ]] && [[ -f ~/mail.sh ]]
+  then
+    # install email resources
+    sudo apt-get -y install \
+      ssmtp \
+      mailutils
+
+    sudo cp  ~/ssmtp.conf /etc/ssmtp/ssmtp.conf
+    echo "pi:joewater.konkube@gmail.com:smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/revaliases
+  fi
+
   # download and install latest sprinklers_pi version
   curl -L -o sprinklers_pi.tar.gz https://github.com/rszimm/sprinklers_pi/archive/v1.5.3.tar.gz
   tar xzfv sprinklers_pi.tar.gz

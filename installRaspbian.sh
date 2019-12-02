@@ -103,7 +103,7 @@ fi
 
 if [[ -d $ROOT_FS_PATH ]]
 then
-  if [[ -f "wpa_supplicant.conf" ]]
+  if [[ -f ./wpa_supplicant.conf ]]
   then
     echo "adding wpa_supplicant.conf to $ROOT_FS_PATH/etc/wpa_supplicant/wpa_supplicant.conf"
     cat wpa_supplicant.conf | sudo tee -a $ROOT_FS_PATH/etc/wpa_supplicant/wpa_supplicant.conf > /dev/null
@@ -136,19 +136,26 @@ then
     echo "pi ALL=(ALL) NOPASSWD:ALL" | sudo tee -a $ROOT_FS_PATH/etc/sudoers > /dev/null
   fi
 
-  if [[ -f $ROOT_FS_PATH/etc/locale.gen ]]
-  then
-    echo "set locales to en_US.utf8"
-    sudo sed -i 's/^# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' $ROOT_FS_PATH/etc/locale.gen
-  fi
-
   if [[ -f ./installApplication.sh ]]
   then
+    echo "adding installApplication.sh to $ROOT_FS_PATH/home/pi/installApplication.sh"
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
     echo "@reboot ~/installApplication.sh"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chown 1000:crontab $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+  fi
+
+  if [[ -f ./ssmtp.conf ]] && [[ -f ./mail.sh ]]
+  then
+    echo "adding ssmtp.conf and mail.sh to $ROOT_FS_PATH/home/pi/"
+    cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/ssmtp.conf
+    sudo chmod 755 $ROOT_FS_PATH/home/pi/ssmtp.conf
+    cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/mail.sh
+    sudo chmod 755 $ROOT_FS_PATH/home/pi/mail.sh
+    echo "adding mail notification for reboots and daily heartbeats"
+    echo "@reboot ~/mail.sh REBOOT `grep recipient ~/ssmtp.conf | cut -d = -f2`"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "0 16 * * * ~/mail.sh HEARTBEAT `grep recipient ~/ssmtp.conf | cut -d = -f2`"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 else
   echo "could not find $ROOT_FS_PATH"
@@ -168,6 +175,7 @@ fi
 echo "removes mounts"
 sudo umount $ROOT_FS_PATH
 sudo umount $BOOT_FS_PATH
+sleep 10
 echo "removes mountpoints"
 sudo rm -rf $ROOT_FS_PATH
 sudo rm -rf $BOOT_FS_PATH
