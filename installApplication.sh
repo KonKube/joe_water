@@ -2,6 +2,8 @@
 
 set -e
 
+MAIL_SENDER=$1
+
 if [[ ! -f ~/initial.lock ]]
 then
   # initialize locales
@@ -25,7 +27,7 @@ then
       mailutils
 
     sudo cp  ~/ssmtp.conf /etc/ssmtp/ssmtp.conf
-    echo "pi:joewater.konkube@gmail.com:smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/revaliases
+    echo "pi:$MAIL_SENDER:smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/revaliases
   fi
 
   # download and install latest sprinklers_pi version

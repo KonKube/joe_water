@@ -1,5 +1,5 @@
 #!/bin/bash
-# ./installRaspbian.sh joewater /dev/sdb Europe/Berlin recipient@gmail
+# ./installRaspbian.sh joewater /dev/sdb Europe/Berlin sender@gmail recipient@gmail
 
 set -e
 set -o pipefail
@@ -7,7 +7,8 @@ set -o pipefail
 HOSTNAME=$1
 FILESYSTEM=$2
 TIMEZONE=$3
-MAIL_RECIPIENT=$4
+MAIL_SENDER=$4
+MAIL_RECIPIENT=$5
 
 IMAGE=raspbian.img
 ROOT_FS_PATH=/media/`whoami`/rootfs
@@ -40,7 +41,7 @@ else
   exit 1
 fi
 
-if mountpoint -x /dev/sdb2
+if mountpoint -x $FILESYSTEM\2
 then
   if mountpoint -q $ROOT_FS_PATH
   then
@@ -49,7 +50,7 @@ then
     sudo umount $ROOT_FS_PATH
   fi
   echo "fix rootfs $ROOT_FS_PATH with fsck"
-  sudo fsck -y /dev/sdb2
+  sudo fsck -y $FILESYSTEM\2
   echo "successful fixed $ROOT_FS_PATH"
 fi
 
@@ -61,17 +62,17 @@ then
     echo "rootfs mount path $ROOT_FS_PATH is mounted"
   else
     echo "mount filesystem to $ROOT_FS_PATH"
-    sudo mount /dev/sdb2 $ROOT_FS_PATH
+    sudo mount $FILESYSTEM\2 $ROOT_FS_PATH
   fi
 else
   echo "rootfs mount path $ROOT_FS_PATH does not exists"
   echo "creating missing path $ROOT_FS_PATH"
   sudo mkdir $ROOT_FS_PATH
   echo "mount filesystem to $ROOT_FS_PATH"
-  sudo mount /dev/sdb2 $ROOT_FS_PATH
+  sudo mount $FILESYSTEM\2 $ROOT_FS_PATH
 fi
 
-if mountpoint -x /dev/sdb1
+if mountpoint -x $FILESYSTEM\1
 then
   if mountpoint -q $BOOT_FS_PATH
   then
@@ -80,7 +81,7 @@ then
     sudo umount $BOOT_FS_PATH
   fi
   echo "fix boot $BOOT_FS_PATH with fsck"
-  sudo fsck -y /dev/sdb1
+  sudo fsck -y $FILESYSTEM\1
   echo "successful fixed $BOOT_FS_PATH"
 fi
 
@@ -92,14 +93,14 @@ then
     echo "boot mount path $BOOT_FS_PATH is mounted"
   else
     echo "mount filesystem to $BOOT_FS_PATH"
-    sudo mount /dev/sdb1 $BOOT_FS_PATH
+    sudo mount $FILESYSTEM\1 $BOOT_FS_PATH
   fi
 else
   echo "boot mount path $BOOT_FS_PATH does not exists"
   echo "creating missing path $BOOT_FS_PATH"
   sudo mkdir $BOOT_FS_PATH
   echo "mount filesystem to $BOOT_FS_PATH"
-  sudo mount /dev/sdb1 $BOOT_FS_PATH
+  sudo mount $FILESYSTEM\1 $BOOT_FS_PATH
 fi
 
 if [[ -d $ROOT_FS_PATH ]]
@@ -142,7 +143,7 @@ then
     echo "adding installApplication.sh to $ROOT_FS_PATH/home/pi/installApplication.sh"
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
-    echo "@reboot ~/installApplication.sh"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "@reboot ~/installApplication.sh $MAIL_SENDER"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chown 1000:crontab $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
