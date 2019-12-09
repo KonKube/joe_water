@@ -7,7 +7,7 @@ MAIL_SENDER=$1
 if [[ ! -f ~/initial.lock ]]
 then
   # initialize locales
-  sudo /usr/sbin/locale-gen en_US.UTF-8
+  sudo /usr/sbin/locale-gen en_GB.UTF-8
 
   # initial update and upgrade on first boot
   sudo apt-get update

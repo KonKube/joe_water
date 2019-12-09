@@ -156,8 +156,8 @@ then
     cp ./mail.sh $ROOT_FS_PATH/home/pi/mail.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/mail.sh
     echo "adding mail notification for reboots and daily heartbeats"
-    echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
-    echo "0 16 * * * ~/mail.sh $MAIL_RECIPIENT HEARTBEAT"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "0 16 * * * ~/mail.sh $MAIL_RECIPIENT HEARTBEAT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 else
   echo "could not find $ROOT_FS_PATH"
@@ -174,6 +174,7 @@ else
   echo "could not find $BOOT_FS_PATH"
 fi
 
+sleep 10
 echo "removes mounts"
 sudo umount $ROOT_FS_PATH
 sudo umount $BOOT_FS_PATH
