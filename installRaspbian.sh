@@ -111,12 +111,24 @@ then
     cat wpa_supplicant.conf | sudo tee -a $ROOT_FS_PATH/etc/wpa_supplicant/wpa_supplicant.conf > /dev/null
   fi
 
-  echo "set hostname to $HOSTNAME"
-  echo $HOSTNAME | sudo tee $ROOT_FS_PATH/etc/hostname > /dev/null
+  if [[ ! -z "$HOSTNAME" ]]
+  then
+    echo "set hostname to $HOSTNAME"
+    echo $HOSTNAME | sudo tee -a $ROOT_FS_PATH/etc/hostname > /dev/null
+  else
+    echo "could not set hostname to $HOSTNAME"
+    exit 1
+  fi
 
-  echo "set local time to $TIMEZONE"
-  sudo rm $ROOT_FS_PATH/etc/localtime
-  sudo cp $ROOT_FS_PATH/usr/share/zoneinfo/$TIMEZONE $ROOT_FS_PATH/etc/localtime
+  if [[ ! -z "$TIMEZONE" ]]
+  then
+    echo "set local time to $TIMEZONE"
+    sudo rm $ROOT_FS_PATH/etc/localtime
+    sudo cp $ROOT_FS_PATH/usr/share/zoneinfo/$TIMEZONE $ROOT_FS_PATH/etc/localtime
+  else
+    echo "could not set local time to $TIMEZONE"
+    exit 1
+  fi
 
   if [[ -f ~/.ssh/id_rsa.pub ]]
   then
