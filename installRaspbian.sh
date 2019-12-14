@@ -107,7 +107,7 @@ if [[ -d $ROOT_FS_PATH ]]
 then
   if [[ -f ./wpa_supplicant.conf ]]
   then
-    echo "adding wpa_supplicant.conf to $ROOT_FS_PATH/etc/wpa_supplicant/wpa_supplicant.conf"
+    echo "adding wpa_supplicant.conf to /etc/wpa_supplicant/wpa_supplicant.conf"
     cat wpa_supplicant.conf | sudo tee -a $ROOT_FS_PATH/etc/wpa_supplicant/wpa_supplicant.conf > /dev/null
   fi
 
@@ -125,7 +125,7 @@ then
     sudo sed -i 's/^UsePAM yes/UsePAM no/g' $ROOT_FS_PATH/etc/ssh/sshd_config
     if [[ ! -d "$ROOT_FS_PATH/home/pi/.ssh" ]]
     then
-      echo "creating $ROOT_FS_PATH/home/pi/.ssh directory"
+      echo "creating /home/pi/.ssh directory"
       sudo mkdir $ROOT_FS_PATH/home/pi/.ssh
       sudo chown 1000:1000 $ROOT_FS_PATH/home/pi/.ssh
     fi
@@ -140,7 +140,7 @@ then
 
   if [[ -f ./installApplication.sh ]]
   then
-    echo "adding installApplication.sh to $ROOT_FS_PATH/home/pi/installApplication.sh"
+    echo "adding installApplication.sh to /home/pi/installApplication.sh"
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
     if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_SENDER" ]]
@@ -155,7 +155,7 @@ then
 
   if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_RECIPIENT" ]]
   then
-    echo "adding .msmtprc and mail.sh to $ROOT_FS_PATH/home/pi/"
+    echo "adding .msmtprc and mail.sh to /home/pi/"
     cp ./.msmtprc $ROOT_FS_PATH/home/pi/.msmtprc
     sudo chmod 600 $ROOT_FS_PATH/home/pi/.msmtprc
     cp ./mail.sh $ROOT_FS_PATH/home/pi/mail.sh
