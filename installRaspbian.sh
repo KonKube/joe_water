@@ -167,7 +167,7 @@ then
     echo 'set sendmail="/usr/bin/msmtp -t"' | sudo tee -a $ROOT_FS_PATH/etc/mail.rc
 
     echo "adding mail notification for reboots and daily heartbeats"
-    echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    echo "@reboot sleep 30 && ~/mail.sh $MAIL_RECIPIENT REBOOT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     echo "0 16 * * * ~/mail.sh $MAIL_RECIPIENT HEARTBEAT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 else
