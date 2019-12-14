@@ -56,7 +56,7 @@ then
 
   # create initial.lock
   echo "create initial.lock"
-  ~/mail.sh $MAIL_RECIPIENT InitialSetup-$HOSTNAME-Sucessful"
+  ~/mail.sh $MAIL_RECIPIENT InitialSetup-$HOSTNAME-Successful"
   touch ~/initial.lock
   sudo reboot now
 fi
