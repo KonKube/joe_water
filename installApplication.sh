@@ -7,41 +7,55 @@ MAIL_SENDER=$1
 if [[ ! -f ~/initial.lock ]]
 then
   # initialize locales
+  echo "initialize locales"
+  export LANGUAGE=en_GB.UTF-8
+  export LANG=en_GB.UTF-8
+  export LC_ALL=en_GB.UTF-8
   sudo /usr/sbin/locale-gen en_GB.UTF-8
 
   # initial update and upgrade on first boot
+  echo "apt-get update"
   sudo apt-get update
-  sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+  ### raspbian upgrade Bug https://www.raspberrypi.org/forums/viewtopic.php?t=258330&p=1575034
+  #echo "apt-get upgrade"
+  #sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 
   # install mandatory resources
+  echo "install libsqlite3-dev"
   sudo apt-get -y install \
-    wiringpi \
-    libsqlite3-dev \
-    build-essential
+    libsqlite3-dev
 
-  if [[ -f ~/ssmtp.conf ]] && [[ -f ~/mail.sh ]]
+  if [[ -f ~/.msmtprc ]] && [[ -f ~/mail.sh ]]
   then
     # install email resources
+    echo "install msmtp and mailutils"
     sudo apt-get -y install \
-      ssmtp \
+      msmtp \
+      msmtp-mta \
       mailutils
-
-    sudo cp  ~/ssmtp.conf /etc/ssmtp/ssmtp.conf
-    echo "pi:$MAIL_SENDER:smtp.gmail.com:587" | sudo tee -a /etc/ssmtp/revaliases
   fi
 
+  # download and install latest wiringPi
+  echo "install wiringPi"
+  curl -LO https://project-downloads.drogon.net/wiringpi-latest.deb
+  sudo dpkg -i wiringpi-latest.deb
+
   # download and install latest sprinklers_pi version
+  echo "install sprinklers_pi"
   curl -L -o sprinklers_pi.tar.gz https://github.com/rszimm/sprinklers_pi/archive/v1.5.3.tar.gz
   tar xzfv sprinklers_pi.tar.gz
   mv sprinklers_pi-* sprinklers_pi
   cd sprinklers_pi
+
+  # enabled GreenIQ in
+  echo "activate GREENIQ configuration of sprinklers_pi"
+  sed -i 's/^\/\/#define GREENIQ/#define GREENIQ/g' /home/pi/sprinklers_pi/config.h
+
   make
   sudo make install
 
-  # enabled GreenIQ in
-  sed -i 's/^\/\/#define GREENIQ/#define GREENIQ/g' /home/pi/sprinklers_pi/config.h
-
   # create initial.lock
+  echo "create initial.lock"
   touch ~/initial.lock
   sudo reboot now
 fi

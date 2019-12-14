@@ -143,18 +143,29 @@ then
     echo "adding installApplication.sh to $ROOT_FS_PATH/home/pi/installApplication.sh"
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
-    echo "@reboot ~/installApplication.sh $MAIL_SENDER"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_SENDER" ]]
+    then
+      echo "@reboot ~/installApplication.sh $MAIL_SENDER > ~/installApplication.lig 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    else
+      echo "@reboot ~/installApplication.sh > ~/installApplication.lig 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+    fi
     sudo chown 1000:crontab $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
   fi
 
-  if [[ -f ./ssmtp.conf && -f ./mail.sh && -v MAIL_RECIPIENT ]]
+  if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_RECIPIENT" ]]
   then
-    echo "adding ssmtp.conf and mail.sh to $ROOT_FS_PATH/home/pi/"
-    cp ./ssmtp.conf $ROOT_FS_PATH/home/pi/ssmtp.conf
-    sudo chmod 755 $ROOT_FS_PATH/home/pi/ssmtp.conf
+    echo "adding .msmtprc and mail.sh to $ROOT_FS_PATH/home/pi/"
+    cp ./.msmtprc $ROOT_FS_PATH/home/pi/.msmtprc
+    sudo chmod 600 $ROOT_FS_PATH/home/pi/.msmtprc
     cp ./mail.sh $ROOT_FS_PATH/home/pi/mail.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/mail.sh
+
+    echo "set up /etc/aliases and /etc/mail.rc"
+    echo "root: $MAIL_SENDER" | sudo tee -a $ROOT_FS_PATH/etc/aliases
+    echo "default: $MAIL_SENDER" | sudo tee -a $ROOT_FS_PATH/etc/aliases
+    echo 'set sendmail="/usr/bin/msmtp -t"' | sudo tee -a $ROOT_FS_PATH/etc/mail.rc
+
     echo "adding mail notification for reboots and daily heartbeats"
     echo "@reboot ~/mail.sh $MAIL_RECIPIENT REBOOT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     echo "0 16 * * * ~/mail.sh $MAIL_RECIPIENT HEARTBEAT-$HOSTNAME"  | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
