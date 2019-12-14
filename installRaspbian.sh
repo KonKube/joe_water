@@ -114,7 +114,7 @@ then
   if [[ ! -z "$HOSTNAME" ]]
   then
     echo "set hostname to $HOSTNAME"
-    echo $HOSTNAME | sudo tee -a $ROOT_FS_PATH/etc/hostname > /dev/null
+    echo $HOSTNAME | sudo tee $ROOT_FS_PATH/etc/hostname > /dev/null
   else
     echo "could not set hostname to $HOSTNAME"
     exit 1
