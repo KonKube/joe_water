@@ -2,7 +2,7 @@
 
 set -e
 
-MAIL_SENDER=$1
+MAIL_RECIPIENT=$1
 
 if [[ ! -f ~/initial.lock ]]
 then
@@ -56,6 +56,7 @@ then
 
   # create initial.lock
   echo "create initial.lock"
+  ~/mail.sh $MAIL_RECIPIENT InitialSetup-$HOSTNAME-Sucessful"
   touch ~/initial.lock
   sudo reboot now
 fi

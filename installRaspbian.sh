@@ -143,11 +143,11 @@ then
     echo "adding installApplication.sh to /home/pi/installApplication.sh"
     cp ./installApplication.sh $ROOT_FS_PATH/home/pi/installApplication.sh
     sudo chmod 755 $ROOT_FS_PATH/home/pi/installApplication.sh
-    if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_SENDER" ]]
+    if [[ -f ./.msmtprc && -f ./mail.sh && ! -z "$MAIL_RECIPIENT" ]]
     then
-      echo "@reboot ~/installApplication.sh $MAIL_SENDER > ~/installApplication.lig 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+      echo "@reboot ~/installApplication.sh $MAIL_RECIPIENT > ~/installApplication.log 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     else
-      echo "@reboot ~/installApplication.sh > ~/installApplication.lig 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
+      echo "@reboot ~/installApplication.sh > ~/installApplication.log 2>&1" | sudo tee -a $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     fi
     sudo chown 1000:crontab $ROOT_FS_PATH/var/spool/cron/crontabs/pi
     sudo chmod 600 $ROOT_FS_PATH/var/spool/cron/crontabs/pi
